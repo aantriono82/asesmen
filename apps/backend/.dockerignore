@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+uploads
+exports
+.env
+.env.local
+.env.production
+*.log

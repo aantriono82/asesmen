@@ -1,0 +1,46 @@
+{
+  "name": "atiga-assessment-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo ATIGA Assessment AI",
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "dev:backend": "npm run dev --workspace apps/backend",
+    "dev:frontend": "npm run dev --workspace apps/frontend",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces",
+    "test:backend": "npm run test --workspace apps/backend",
+    "test:frontend": "npm run test --workspace apps/frontend",
+    "test:coverage": "npm run test:coverage --workspace apps/backend && npm run test:coverage --workspace apps/frontend",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && husky || true",
+    "db:generate": "npm run db:generate --workspace apps/backend",
+    "db:migrate": "npm run db:migrate --workspace apps/backend",
+    "db:seed": "npm run db:seed --workspace apps/backend"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,ts,tsx}": "eslint --fix",
+    "*.{json,md,css}": "prettier --write"
+  },
+  "engines": {
+    "node": ">=20.11.0",
+    "npm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.6.2"
+  }
+}

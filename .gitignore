@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Build output
+.next/
+dist/
+build/
+
+# Uploads & exports
+uploads/
+exports/
+tmp/atiga_exports/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+
+# Misc
+*.tsbuildinfo
+.cache/
+.swc/

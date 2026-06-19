@@ -1,0 +1,14 @@
+{
+  "title": "ATIGA Overview",
+  "panels": [
+    { "title": "Request Rate", "type": "timeseries", "targets": [{ "expr": "sum(rate(http_requests_total[5m]))" }] },
+    { "title": "Error Rate", "type": "timeseries", "targets": [{ "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m]))" }] },
+    { "title": "P95 Latency", "type": "timeseries", "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))" }] },
+    { "title": "Skill Execution Success Rate", "type": "timeseries", "targets": [{ "expr": "sum(rate(skill_executions_total{status=\"completed\"}[5m])) / clamp_min(sum(rate(skill_executions_total[5m])), 1)" }] },
+    { "title": "Queue Depth", "type": "stat", "targets": [{ "expr": "queue_job_duration_seconds_count" }] },
+    { "title": "Token Usage 24h", "type": "timeseries", "targets": [{ "expr": "sum(increase(ai_tokens_used_total[24h])) by (provider)" }] },
+    { "title": "Document Processing Rate", "type": "timeseries", "targets": [{ "expr": "sum(rate(document_processing_duration_seconds_count[5m]))" }] }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

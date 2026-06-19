@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: atiga-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: atiga_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - atiga_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d atiga_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  atiga_postgres_data:
