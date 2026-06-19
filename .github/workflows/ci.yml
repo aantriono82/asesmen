@@ -21,6 +21,9 @@ jobs:
 
   test-unit:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://atiga:atiga@localhost:5432/atiga_db
+      JWT_SECRET: this_is_a_local_ci_secret_that_is_long_enough
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
