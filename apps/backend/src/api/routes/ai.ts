@@ -6,13 +6,14 @@ import { AIProviderRegistry } from "@infra/ai/ai-provider.registry";
 import { PgRateLimiter, rateLimitPolicies } from "@infra/rate-limit/pg-rate-limiter";
 
 const registry = new AIProviderRegistry();
-const rateLimiter = new PgRateLimiter();
 
 const switchProviderSchema = z.object({
   provider: z.enum(["openai", "anthropic", "google", "deepseek"])
 });
 
 export const aiRoutes: FastifyPluginAsync = async (fastify) => {
+  const rateLimiter = new PgRateLimiter();
+
   fastify.get("/ai/providers", { preHandler: [authenticate, requireTeacher] }, async (_request, reply) => {
     await rateLimiter.consume(_request, reply, rateLimitPolicies.ai);
     const providers = await registry.list();

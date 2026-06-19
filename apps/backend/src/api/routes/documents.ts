@@ -23,7 +23,6 @@ const repository = new DrizzleAssessmentRepository();
 const documents = new DrizzleDocumentRepository();
 const audit = new AuditService();
 const storage = getFileStorage();
-const rateLimiter = new PgRateLimiter();
 
 const querySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
@@ -40,6 +39,8 @@ const uploadMimeTypes = new Set([
 ]);
 
 export const documentRoutes: FastifyPluginAsync = async (fastify) => {
+  const rateLimiter = new PgRateLimiter();
+
   fastify.post("/documents/upload", { preHandler: [authenticate, requireTeacher] }, async (request, reply) => {
     await rateLimiter.consume(request, reply, rateLimitPolicies.upload);
     const userId = z.string().uuid().parse(request.user?.id);

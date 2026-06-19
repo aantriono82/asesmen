@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 const listMock = vi.fn();
 const getActiveProviderMock = vi.fn();
 const setActiveProviderMock = vi.fn();
+const rateLimiterConsumeMock = vi.fn();
 
 vi.mock("../src/infrastructure/ai/ai-provider.registry", () => ({
   AIProviderRegistry: vi.fn().mockImplementation(() => ({
@@ -10,6 +11,13 @@ vi.mock("../src/infrastructure/ai/ai-provider.registry", () => ({
     getActiveProvider: getActiveProviderMock,
     setActiveProvider: setActiveProviderMock
   }))
+}));
+
+vi.mock("../src/infrastructure/rate-limit/pg-rate-limiter", () => ({
+  PgRateLimiter: vi.fn().mockImplementation(() => ({ consume: rateLimiterConsumeMock })),
+  rateLimitPolicies: {
+    ai: { name: "ai", limit: 10, windowMs: 60_000, scope: "user" }
+  }
 }));
 
 describe("ai routes", () => {
@@ -56,6 +64,7 @@ describe("ai routes", () => {
     await activeHandler?.({}, { success });
     await switchHandler?.({ body: { provider: "deepseek" } }, { success });
 
+    expect(rateLimiterConsumeMock).toHaveBeenCalledTimes(3);
     expect(listMock).toHaveBeenCalledTimes(1);
     expect(getActiveProviderMock).toHaveBeenCalledTimes(1);
     expect(setActiveProviderMock).toHaveBeenCalledWith("deepseek");

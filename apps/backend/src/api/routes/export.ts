@@ -8,7 +8,6 @@ import { PgRateLimiter, rateLimitPolicies } from "@infra/rate-limit/pg-rate-limi
 
 const exportService = new ExportService();
 const auditService = new AuditService();
-const rateLimiter = new PgRateLimiter();
 
 const exportBodySchema = z.object({
   assessmentId: z.string().uuid().optional(),
@@ -38,6 +37,8 @@ const tokenParamsSchema = z.object({
 });
 
 export const exportRoutes: FastifyPluginAsync = async (fastify) => {
+  const rateLimiter = new PgRateLimiter();
+
   fastify.post("/export/docx", { preHandler: [authenticate, requireTeacher] }, async (request, reply) => {
     await rateLimiter.consume(request, reply, rateLimitPolicies.export);
     const userId = z.string().uuid().parse(request.user?.id);

@@ -55,7 +55,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run db:migrate --workspace apps/backend
+      - run: npm run db:migrate
       - run: npm run test:backend
 
   build:

@@ -26,9 +26,10 @@ const users = new DrizzleUserRepository();
 const sessions = new DrizzleSessionRepository();
 const tokens = new JwtTokenService();
 const auditService = new AuditService();
-const rateLimiter = new PgRateLimiter();
 
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
+  const rateLimiter = new PgRateLimiter();
+
   fastify.post("/auth/register", async (request, reply) => {
     await rateLimiter.consume(request, reply, rateLimitPolicies.auth);
     const input = parseBody(request, registerInputSchema);

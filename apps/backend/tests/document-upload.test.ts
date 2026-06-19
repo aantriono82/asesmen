@@ -3,9 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 
 const createDocumentMock = vi.fn();
 const queueSendMock = vi.fn();
+const rateLimiterConsumeMock = vi.fn();
 const uploadStreamMock = vi.fn().mockImplementation(async (stream: NodeJS.ReadableStream) => {
-  for await (const _chunk of stream) {
+  for await (const chunk of stream) {
     // consume the stream so ByteCounterTransform captures signature bytes
+    void chunk;
   }
   return { path: "documents/u/doc.pdf", url: "http://local/doc.pdf" };
 });
@@ -25,6 +27,13 @@ vi.mock("../src/infrastructure/storage", () => ({
 
 vi.mock("../src/infrastructure/queue/queue", () => ({
   getQueue: () => ({ send: queueSendMock })
+}));
+
+vi.mock("../src/infrastructure/rate-limit/pg-rate-limiter", () => ({
+  PgRateLimiter: vi.fn().mockImplementation(() => ({ consume: rateLimiterConsumeMock })),
+  rateLimitPolicies: {
+    upload: { name: "upload", limit: 5, windowMs: 60_000, scope: "user" }
+  }
 }));
 
 vi.mock("../src/infrastructure/audit/audit.service", () => ({
@@ -66,6 +75,7 @@ describe("document upload api", () => {
     );
 
     expect(uploadStreamMock).toHaveBeenCalledTimes(1);
+    expect(rateLimiterConsumeMock).toHaveBeenCalledTimes(1);
     expect(createDocumentMock).toHaveBeenCalledTimes(1);
     expect(queueSendMock).toHaveBeenCalledWith("document-processing", expect.any(Object));
   });
