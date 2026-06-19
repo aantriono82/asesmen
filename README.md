@@ -75,6 +75,8 @@ Secara default, package GHCR mengikuti visibility repository. Jika repo public, 
 - `GRAFANA_PASSWORD`
 - provider AI keys bila deploy memakai GitHub Actions env injection
 
+Workflow `CD` akan otomatis `skip` sampai `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, dan `DEPLOY_PATH` dikonfigurasi di repository secrets.
+
 ## Monitoring
 
 - Prometheus scrape config: [monitoring/prometheus/prometheus.yml](/home/aantriono/Dev/soal/monitoring/prometheus/prometheus.yml)
