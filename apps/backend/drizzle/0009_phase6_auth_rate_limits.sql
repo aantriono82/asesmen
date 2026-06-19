@@ -40,14 +40,36 @@ ALTER TABLE "rate_limits" ADD COLUMN IF NOT EXISTS "created_at" timestamp with t
 --> statement-breakpoint
 ALTER TABLE "rate_limits" ADD COLUMN IF NOT EXISTS "updated_at" timestamp with time zone DEFAULT now();
 --> statement-breakpoint
-UPDATE "rate_limits"
-SET
-  "window_start" = COALESCE("window_start", "expires_at", now()),
-  "created_at" = COALESCE("created_at", now()),
-  "updated_at" = COALESCE("updated_at", now())
-WHERE "window_start" IS NULL
-   OR "created_at" IS NULL
-   OR "updated_at" IS NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'rate_limits'
+      AND column_name = 'expires_at'
+  ) THEN
+    EXECUTE $sql$
+      UPDATE "rate_limits"
+      SET
+        "window_start" = COALESCE("window_start", "expires_at", now()),
+        "created_at" = COALESCE("created_at", now()),
+        "updated_at" = COALESCE("updated_at", now())
+      WHERE "window_start" IS NULL
+         OR "created_at" IS NULL
+         OR "updated_at" IS NULL
+    $sql$;
+  ELSE
+    UPDATE "rate_limits"
+    SET
+      "window_start" = COALESCE("window_start", now()),
+      "created_at" = COALESCE("created_at", now()),
+      "updated_at" = COALESCE("updated_at", now())
+    WHERE "window_start" IS NULL
+       OR "created_at" IS NULL
+       OR "updated_at" IS NULL;
+  END IF;
+END $$;
 --> statement-breakpoint
 ALTER TABLE "rate_limits" ALTER COLUMN "window_start" SET NOT NULL;
 --> statement-breakpoint
